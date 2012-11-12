@@ -1,0 +1,25 @@
+package org.no9.r2993;
+
+import android.os.Bundle;
+import android.app.Activity;
+import android.view.Menu;
+
+public class RelayManager extends Activity {
+
+	private static final int VID = 0x2341;
+	private static final int PID_UNO = 0x0043;
+	private static final int PID_MEGA = 0x0044;
+	private static UsbController sUsbController;
+	
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_relay_manager);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_relay_manager, menu);
+        return true;
+    }
+}

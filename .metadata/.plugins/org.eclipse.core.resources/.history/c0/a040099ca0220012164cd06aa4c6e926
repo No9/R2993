@@ -1,0 +1,7 @@
+package org.no9.r2993;
+
+public interface ISocketConnectionHandler {
+	void onSocketData();
+	void onConnected();
+	void onError();
+}
