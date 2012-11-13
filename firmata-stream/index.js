@@ -31,15 +31,33 @@ var PIN_MODE = 0xF4,
 	exports.board = function (port) {
 			var stream = new Stream();
 			stream.readable = true;
+			stream.writable = true;
 			
-			this.sp = new SerialPort(port, {
+			var sp = new SerialPort(port, {
                 baudrate: 57600,
                 buffersize: 1
             });
 			
-			this.sp.write(REPORT_VERSION);
-			this.sp.on('data', function(data) {
-				stream.emit('data', JSON.stringify(data));
+			var bytes = 0;
+
+			stream.write = function (buf) {
+				sp.write(buf[0]);
+				bytes += buf.length;
+			};
+
+			stream.end = function (buf) {
+				if (arguments.length) stream.write(buf);
+
+				stream.writable = false;
+				console.log(bytes + ' bytes written');
+			};
+
+			stream.destroy = function () {
+				stream.writable = false;
+			};
+			
+			sp.on('data', function(data) {
+				stream.emit('data', data);
 			});
 			
 			return stream;

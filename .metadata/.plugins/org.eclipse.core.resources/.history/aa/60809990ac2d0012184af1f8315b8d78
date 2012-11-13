@@ -69,23 +69,23 @@ public class RelayManager extends Activity {
     	
     	@Override
     	public void onConnected(){
-    		//appendToTextField("TCP Server Running\n");
+    		appendToTextField("TCP Server Running\n");
     	}
     	
     	@Override
     	public void onError(String msg){
-    		//appendToTextField("Error in TCPIP server\n");
-    		//appendToTextField(msg + "\n");
+    		appendToTextField("Error in TCPIP server\n");
+    		appendToTextField(msg + "\n");
     	}
     	
     	@Override
     	public void onData(String data){
-    		//appendToTextField("Data Arrived:" + data + "\n");
+    		appendToTextField("Data Arrived:" + data + "\n");
     	}
     	
     	@Override
     	public void onClientClosed(){
-    		//appendToTextField("Client Closed\n");
+    		appendToTextField("Client Closed\n");
     	}
     };
 }
