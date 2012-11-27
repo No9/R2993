@@ -43,7 +43,6 @@
          android:ems="10"
          android:inputType="textMultiLine"
          android:gravity="top"  
-         android:editable="false"
          android:focusable="false"
          android:text="@string/initial_text" >
 

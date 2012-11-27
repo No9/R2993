@@ -1,0 +1,13 @@
+package org.no9.r2993;
+
+public class FirmataController {
+
+	private SocketController skt;
+	private UsbController usb;
+	
+	public FirmataController(int vid, int pid){
+		skt = new SocketController(handler, vid, pid);
+		
+	}
+	
+}

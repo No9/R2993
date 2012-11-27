@@ -1,0 +1,35 @@
+package org.no9.r2993;
+
+public class FirmataController {
+
+	private SocketController skt;
+	private UsbController usb;
+	
+	public FirmataController(int vid, int pid){
+		skt = new SocketController(mSocketConnectionHandler);
+		usb = new UsbController(ctx, usbHandler, vid, pid)
+	}
+
+private final ISocketConnectionHandler mSocketConnectionHandler = new ISocketConnectionHandler() {
+    	
+    	@Override
+    	public void onConnected(){
+    	   L.info("TCP Server Running\n");
+    	}
+    	
+    	@Override
+    	public void onError(String msg){
+    		L.error("Error in TCPIP server\n" + msg);
+    	}
+    	
+    	@Override
+    	public void onData(String data){
+    		L.info("Data Arrived:" + data + "\n");
+    	}
+    	
+    	@Override
+    	public void onClientClosed(){
+    		L.info("Client Closed\n");
+    	}
+    };
+}

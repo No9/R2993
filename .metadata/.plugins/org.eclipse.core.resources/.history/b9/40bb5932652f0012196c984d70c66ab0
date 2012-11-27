@@ -1,0 +1,69 @@
+package org.no9.r2993;
+
+import android.app.Service;
+
+
+public class SocketService extends Service {
+
+    Socket s;
+    PrintStream os;
+
+    @Override
+    public IBinder onBind(Intent arg0) {
+        // TODO Auto-generated method stub
+        return myBinder;
+    }
+
+    private final IBinder myBinder = new LocalBinder();
+
+    public class LocalBinder extends Binder {
+        public SocketService getService() {
+            return SocketService.this;
+        }
+    }
+
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        s = new Socket();
+    }
+
+    public void IsBoundable(){
+        Toast.makeText(this,"I bind like butter", Toast.LENGTH_LONG).show();
+    }
+
+    public void onStart(Intent intent, int startId){
+        super.onStart(intent, startId);
+        Toast.makeText(this,"Service created ...", Toast.LENGTH_LONG).show();
+        Runnable connect = new connectSocket();
+        new Thread(connect).start();
+    }
+
+    class connectSocket implements Runnable {
+
+        @Override
+        public void run() {
+            SocketAddress socketAddress = new InetSocketAddress("192.168.1.104", 4505);
+            try {               
+                s.connect(socketAddress);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try {
+            s.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        s = null;
+    }
+}

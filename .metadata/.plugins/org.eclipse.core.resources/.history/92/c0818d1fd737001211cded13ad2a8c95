@@ -1,0 +1,161 @@
+package org.no9.r2993;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+
+import com.hoho.android.usbserial.driver.UsbSerialDriver;
+import com.hoho.android.usbserial.driver.UsbSerialProber;
+
+import android.content.Context;
+import android.hardware.usb.UsbManager;
+
+public class SocketController implements Runnable{
+	
+	public static final String SERVERIP = "127.0.0.1";
+	public static final int SERVERPORT = 4444;
+	private final ISocketConnectionHandler mSocketConnectionHandler;
+	private final Context mApplicationContext;
+	private final UsbManager mUsbManager;
+	private final UsbSerialDriver driver;
+	
+	private Thread mThread;
+	private OutputStream out = null;
+	private ServerSocket serverSocket;
+	private static final Object[] sSendLock = new Object[]{};//learned this trick from some google example :)
+	//basically an empty array is lighter than an  actual new Object()...
+	private boolean mStop = false;
+	
+	public SocketController(Context ctx, ISocketConnectionHandler handler){
+		
+		mApplicationContext = ctx;
+		mUsbManager = (UsbManager) mApplicationContext
+				.getSystemService(Context.USB_SERVICE);
+		
+		
+		
+		mSocketConnectionHandler = handler;
+		driver = UsbSerialProber.acquire(mUsbManager);
+		  try {
+				driver.open();
+				driver.setBaudRate(115200);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		  
+		mThread = new Thread(this);
+		mThread.start();
+	}
+	
+	
+	
+	public void stop() {
+		mStop = true;
+		
+		try {
+			serverSocket.close();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			L.error(e1);
+		}
+		
+		synchronized (sSendLock) {
+			sSendLock.notify();
+		}
+		try {
+			if(mThread != null)
+				mThread.join();
+		} catch (InterruptedException e) {
+			L.error(e.toString());
+		}
+		mStop = false;
+		mThread = null;
+	}
+	
+	public void send(byte[] buf){
+		try{
+			L.info("data to server");
+			L.info(buf);
+		out.write(buf);
+		}catch(IOException ex){
+			L.error(ex);
+		}
+	}
+	
+	public void run() {
+
+        try {
+        	
+            serverSocket = new ServerSocket(SERVERPORT);
+            mSocketConnectionHandler.onConnected();
+        	
+            while (true) {
+            	
+                Socket client = serverSocket.accept();
+                out = client.getOutputStream();
+                
+                try {
+                	InputStream is = client.getInputStream();
+                	ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                	int nRead;
+                	byte[] data = new byte[256];
+                	ArrayList al = new ArrayList<Byte>();
+                	
+                	while ((nRead = is.read(data, 0, data.length)) != -1) {
+                		for(int i = 0; i < data.length; i++){
+                			if((int)data[i] != 0)
+                				al.add(data[i]);
+                		}
+                		
+                		byte[] req = new byte[al.size()];
+                		for (int i = 0; i < req.length; i++) {
+                			req[i] = data[i];
+                		}
+                		
+                		driver.write(req, 1000);
+                		byte resp[] = new byte[16];
+                	    int numBytesRead = driver.read(resp, 1000);
+                		mSocketConnectionHandler.Emit(resp);
+                		 
+                	}
+
+                	//buffer.flush();
+                	//if(buffer.size() > 0){
+                		//mSocketConnectionHandler.Emit(buffer.toByteArray());
+                		//sUsbController.send(buffer.toByteArray());
+                		//l("Socket Data: " + buffer.toString("UTF-8"));
+                	//}
+
+                } catch(Exception e) {
+
+                	L.error("Error in buffer reader: " + e.getMessage() + "\n");
+                	L.error(e);
+                	mSocketConnectionHandler.onError("Error in buffer reader: " + e.getMessage() + "\n");
+                    
+                } finally {
+
+                       client.close();
+                       L.info("S: Done.");
+                       }
+            }      
+
+        } catch (Exception e) {
+        	mSocketConnectionHandler.onError("Error in connection : " + e.getMessage() + "\n");
+        	
+        	L.error("S: Error");
+        	L.error(e);
+        } finally {
+        	try {
+				serverSocket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				L.error("Failed to close server socktet");
+			}
+        	}
+        }
+   }

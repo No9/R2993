@@ -6,4 +6,5 @@ public interface ISocketConnectionHandler {
 	void onError(String errormsg);
 	void onData(String data);
 	void onClientClosed();
+	void Emit(byte[] buf);
 }
