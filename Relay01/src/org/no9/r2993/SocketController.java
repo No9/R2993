@@ -169,7 +169,7 @@ public class SocketController implements Runnable{
 	
 	private SerialInputOutputManager mSerialIoManager;
 	private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
-	private ArrayList outArraylist = new ArrayList<Byte>();
+	
     private final SerialInputOutputManager.Listener mListener =
             new SerialInputOutputManager.Listener() {
 
@@ -184,10 +184,9 @@ public class SocketController implements Runnable{
         	try{
         		out.write(data);
     			out.flush();
-    				
+    		    L.info(">>>Out Data : " + data);
     			} catch (IOException e) {
-    				// TODO Auto-generated catch block
-    				e.printStackTrace();
+    			 L.error(e);
     			}
     		
         }
@@ -211,15 +210,8 @@ public class SocketController implements Runnable{
 		  try {
 				driver.open();
 				driver.setBaudRate(57600);
-//				int[] arr = new int[] { 0xF9 };
-//				driver.write(ENCODE_INT_ARRAY(arr), 1000);
-				//byte[] tmpb = new byte[256];
-				//driver.read(tmpb, 1000);
-				
-				
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				L.error(e1);
 			}
 		  
 		mThread = new Thread(this);
@@ -234,7 +226,6 @@ public class SocketController implements Runnable{
 		try {
 			serverSocket.close();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			L.error(e1);
 		}
 		
@@ -251,16 +242,6 @@ public class SocketController implements Runnable{
 		mThread = null;
 	}
 	
-	public void send(byte[] buf){
-		try{
-			L.info("data to server");
-			L.info(buf);
-		out.write(buf);
-		}catch(IOException ex){
-			L.error(ex);
-		}
-	}
-	
 	public void run() {
 
         try {
@@ -275,13 +256,12 @@ public class SocketController implements Runnable{
                 
                 try {
                 	InputStream is = client.getInputStream();
-                	ByteArrayOutputStream buffer = new ByteArrayOutputStream();
                 	int nRead;
-                	byte[] data = new byte[256];
-                	ArrayList al = new ArrayList<Byte>();
+                	byte[] data = new byte[4096];
+                	
                 	
                 	while ((nRead = is.read(data, 0, data.length)) != -1) {
-                	
+                		ArrayList al = new ArrayList<Byte>();
                 		for(int i = 0; i < data.length; i++){
                 			if((int)data[i] != 0)
                 				al.add(data[i]);
@@ -292,8 +272,12 @@ public class SocketController implements Runnable{
                 			req[i] = data[i];
                 		}
                 		
+                		
                 		driver.write(req, 1000);
-                		 
+                		//driver.
+                		L.info(">>>In Data : " + req);
+            		    
+                		Thread.sleep(5);
                 	}
 
                 } catch(Exception e) {
@@ -303,10 +287,8 @@ public class SocketController implements Runnable{
                 	mSocketConnectionHandler.onError("Error in buffer reader: " + e.getMessage() + "\n");
                     
                 } finally {
-
-                       //client.close();
-                       L.info("S: Done.");
-                       }
+                       L.info("S: Client Disconnected.");
+                }
             }      
 
         } catch (Exception e) {
@@ -316,9 +298,9 @@ public class SocketController implements Runnable{
         	L.error(e);
         } finally {
         	try {
+        		if(serverSocket != null)
 				serverSocket.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				L.error("Failed to close server socktet");
 			}
         	}

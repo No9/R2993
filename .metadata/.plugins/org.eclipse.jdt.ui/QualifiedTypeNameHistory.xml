@@ -38,8 +38,15 @@
 <fullyQualifiedTypeName name="android.app.Application"/>
 <fullyQualifiedTypeName name="org.no9.r2993.BaseApplication"/>
 <fullyQualifiedTypeName name="android.app.Activity"/>
-<fullyQualifiedTypeName name="java.io.IOException"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="java.nio.ByteBuffer"/>
 <fullyQualifiedTypeName name="org.no9.r2993.L"/>
+<fullyQualifiedTypeName name="com.hoho.android.usbserial.driver.UsbSerialDriver"/>
+<fullyQualifiedTypeName name="java.io.IOException"/>
+<fullyQualifiedTypeName name="java.util.HashMap"/>
+<fullyQualifiedTypeName name="android.hardware.usb.UsbDevice"/>
+<fullyQualifiedTypeName name="java.util.Iterator"/>
+<fullyQualifiedTypeName name="com.hoho.android.usbserial.util.SerialInputOutputManager"/>
+<fullyQualifiedTypeName name="java.util.concurrent.ExecutorService"/>
+<fullyQualifiedTypeName name="java.util.concurrent.Executors"/>
 </qualifiedTypeNameHistroy>

@@ -17,7 +17,7 @@ public class RelayManager extends Activity {
 	
 	private int PID = 0x0043;
 	private static final int VID = 0x2341;
-	private FirmataController firmata;
+	private SocketController skt;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,15 +53,16 @@ public class RelayManager extends Activity {
 			    	break;
 			}  
 		    
-			firmata = new FirmataController(RelayManager.this, VID, PID);
+			skt = new SocketController(RelayManager.this, mSocketConnectionHandler, VID, PID);
 		    
         }
        };
     
        private OnClickListener stopListener = new OnClickListener() {
             public void onClick(View v){
-                //stopService(new Intent(RelayManager.this,SocketService.class));
-            	firmata.stop();
+               
+            	if(skt != null)
+            	skt.stop();
             	
            }               
        };
@@ -76,5 +77,34 @@ public class RelayManager extends Activity {
     protected void onDestroy() {
         super.onDestroy();
     }
+    
+private final ISocketConnectionHandler mSocketConnectionHandler = new ISocketConnectionHandler() {
+    	
+    	@Override
+    	public void onConnected(){
+    	   L.info("TCP Server Running\n");
+    	}
+    	
+    	@Override
+    	public void onError(String msg){
+    		L.error("Error in TCPIP server\n" + msg);
+    	}
+    	
+    	@Override
+    	public void onData(String data){
+    		L.info("Data Arrived:" + data + "\n");
+    		
+    	}
+    	
+    	@Override 
+    	public void Emit(byte[] buf){
+    		
+    	}
+    	
+    	@Override
+    	public void onClientClosed(){
+    		L.info("Client Closed\n");
+    	}
+    };
   }
 
