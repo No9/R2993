@@ -1,0 +1,30 @@
+{
+  "name": "R2993",
+  "description": "",
+  "tags": [
+    "Arduino",
+    "Android",
+    "Streams",
+    "TCP",
+	"USB"
+  ],
+  "version": "0.0.1",
+  "author": {
+    "name": "Anton Whalley",
+    "email": "anton.whalley@vodafone.ie"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/No9/R2993.git"
+  },
+  "bugs": {
+    "url": "https://github.com/No9/R2993/issues"
+  },
+  "dependencies": {
+    "firmata-stream" : "0.1.0"
+  },
+  "devDependencies" : {
+    },
+    "scripts" : {
+  }
+}

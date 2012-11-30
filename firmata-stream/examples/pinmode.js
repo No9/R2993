@@ -1,1 +1,0 @@
-exports.PIN_MODE = 0xF4;
